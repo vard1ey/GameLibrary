@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "143230677188",
+    "project_id": "gamelibrary-f6ca3",
+    "storage_bucket": "gamelibrary-f6ca3.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:143230677188:android:0c5b6fa3f8457e3927d991",
+        "android_client_info": {
+          "package_name": "com.example.myapplication"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC_nPPSQm3vvjdIkXlSdKieGYcopcTzjTM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
