@@ -12,12 +12,11 @@
 * [Команда проекта](#Команда-проекта)
 
 ## Технологии
-* Язык программирования: Java
-* Платформа: Android
-* База данных: SQLite
-* Система сборки: Gradle
-* Минимальная версия SDK: API 21 (Android 5.0 Lollipop)
-* Среда разработки: Android Studio
+* Язык программирования: [Java](https://www.oracle.com/java/technologies/downloads/)
+* Платформа: [Android](https://www.android.com/)
+* База данных: [SQLite](https://www.sqlite.org/)
+* Система сборки: [Gradle](https://gradle.org/)
+* Среда разработки: [Android Studio](https://developer.android.com/studio?hl=ru)
 
 ## Использование
 Для работы с приложением необходимо следующее программное обеспечение:
@@ -43,7 +42,7 @@
 
 ## Разработка
 ### Требования
-Для установки и запуска проекта необходим Android Studio.
+Для установки и запуска проекта необходим [Android Studio](https://developer.android.com/studio?hl=ru).
 
 ## Тестирование
 В проекте использовались интеграционное и модульное тестирования.
