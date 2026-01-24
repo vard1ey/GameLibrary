@@ -12,7 +12,7 @@ import java.util.List;
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String TAG = "DatabaseHelper";
     private static final String DATABASE_NAME = "game_library.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
 
     // Таблица пользователей
     private static final String TABLE_USERS = "users";
@@ -32,6 +32,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String COLUMN_GAME_USER_ID = "user_id";
     private static final String COLUMN_GAME_NOTE = "note";
     private static final String COLUMN_GAME_ADDED_DATE = "added_date";
+    private static final String COLUMN_APP_PACKAGE_NAME = "app_package_name";
 
     private static final String CREATE_TABLE_USERS =
             "CREATE TABLE " + TABLE_USERS + "("
@@ -51,6 +52,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     + COLUMN_GAME_STATUS + " TEXT DEFAULT 'Не начата',"
                     + COLUMN_GAME_USER_ID + " INTEGER NOT NULL,"
                     + COLUMN_GAME_NOTE + " TEXT,"
+                    + COLUMN_APP_PACKAGE_NAME + " TEXT," // Новая колонка
                     + COLUMN_GAME_ADDED_DATE + " DATETIME DEFAULT CURRENT_TIMESTAMP,"
                     + "FOREIGN KEY(" + COLUMN_GAME_USER_ID + ") REFERENCES "
                     + TABLE_USERS + "(" + COLUMN_USER_ID + ")"
@@ -69,11 +71,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_GAMES);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
-        onCreate(db);
+        if (oldVersion < 2) {
+            db.execSQL("ALTER TABLE " + TABLE_GAMES + " ADD COLUMN " + COLUMN_APP_PACKAGE_NAME + " TEXT");
+        }
     }
-    
+
     /**
      * Регистрация нового пользователя
      */
@@ -83,12 +85,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COLUMN_USER_NAME, name);
         values.put(COLUMN_USER_EMAIL, email);
         values.put(COLUMN_USER_PASSWORD, password);
-        
+
         long result = db.insert(TABLE_USERS, null, values);
         db.close();
         return result;
     }
-    
+
     /**
      * Авторизация пользователя
      */
@@ -100,10 +102,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             COLUMN_USER_EMAIL,
             COLUMN_REG_DATE
         };
-        
+
         String selection = COLUMN_USER_EMAIL + " = ? AND " + COLUMN_USER_PASSWORD + " = ?";
         String[] selectionArgs = {email, password};
-        
+
         Cursor cursor = db.query(
             TABLE_USERS,
             columns,
@@ -111,7 +113,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             selectionArgs,
             null, null, null
         );
-        
+
         User user = null;
         if (cursor != null && cursor.moveToFirst()) {
             user = new User();
@@ -121,11 +123,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             user.setRegistrationDate(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_REG_DATE)));
             cursor.close();
         }
-        
+
         db.close();
         return user;
     }
-    
+
     /**
      * Проверка существования email
      */
@@ -134,7 +136,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String[] columns = {COLUMN_USER_ID};
         String selection = COLUMN_USER_EMAIL + " = ?";
         String[] selectionArgs = {email};
-        
+
         Cursor cursor = db.query(
             TABLE_USERS,
             columns,
@@ -142,13 +144,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             selectionArgs,
             null, null, null
         );
-        
+
         boolean exists = cursor.getCount() > 0;
         cursor.close();
         db.close();
         return exists;
     }
-    
+
     /**
      * Получение пользователя по ID
      */
@@ -160,10 +162,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             COLUMN_USER_EMAIL,
             COLUMN_REG_DATE
         };
-        
+
         String selection = COLUMN_USER_ID + " = ?";
         String[] selectionArgs = {String.valueOf(userId)};
-        
+
         Cursor cursor = db.query(
             TABLE_USERS,
             columns,
@@ -171,7 +173,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             selectionArgs,
             null, null, null
         );
-        
+
         User user = null;
         if (cursor != null && cursor.moveToFirst()) {
             user = new User();
@@ -181,12 +183,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             user.setRegistrationDate(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_REG_DATE)));
             cursor.close();
         }
-        
+
         db.close();
         return user;
     }
 
-    
+
     /**
      * Добавление игры
      */
@@ -199,34 +201,36 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COLUMN_GAME_STATUS, game.getStatus());
         values.put(COLUMN_GAME_USER_ID, game.getUserId());
         values.put(COLUMN_GAME_NOTE, game.getNote());
-        
+        values.put(COLUMN_APP_PACKAGE_NAME, game.getAppPackageName());
+
         long result = db.insert(TABLE_GAMES, null, values);
         db.close();
         return result;
     }
-    
+
     /**
      * Получение всех игр пользователя
      */
     public List<Game> getUserGames(int userId) {
         List<Game> gameList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        
+
         String[] columns = {
-            COLUMN_GAME_ID,
-            COLUMN_GAME_TITLE,
-            COLUMN_GAME_GENRE,
-            COLUMN_GAME_PLATFORM,
-            COLUMN_GAME_STATUS,
-            COLUMN_GAME_USER_ID,
+                COLUMN_GAME_ID,
+                COLUMN_GAME_TITLE,
+                COLUMN_GAME_GENRE,
+                COLUMN_GAME_PLATFORM,
+                COLUMN_GAME_STATUS,
+                COLUMN_GAME_USER_ID,
                 COLUMN_GAME_NOTE,
-            COLUMN_GAME_ADDED_DATE
+                COLUMN_APP_PACKAGE_NAME,
+                COLUMN_GAME_ADDED_DATE
         };
-        
+
         String selection = COLUMN_GAME_USER_ID + " = ?";
         String[] selectionArgs = {String.valueOf(userId)};
         String orderBy = COLUMN_GAME_ADDED_DATE + " DESC";
-        
+
         Cursor cursor = db.query(
             TABLE_GAMES,
             columns,
@@ -234,10 +238,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             selectionArgs,
             null, null, orderBy
         );
-        
+
         if (cursor != null && cursor.moveToFirst()) {
             do {
                 Game game = new Game();
+                game.setAppPackageName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_APP_PACKAGE_NAME)));
                 game.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_GAME_ID)));
                 game.setTitle(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_GAME_TITLE)));
                 game.setGenre(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_GAME_GENRE)));
@@ -250,11 +255,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             } while (cursor.moveToNext());
             cursor.close();
         }
-        
+
         db.close();
         return gameList;
     }
-    
+
     /**
      * Обновление статуса игры
      */
@@ -262,15 +267,35 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COLUMN_GAME_STATUS, status);
-        
+
         String whereClause = COLUMN_GAME_ID + " = ?";
         String[] whereArgs = {String.valueOf(gameId)};
-        
+
         int result = db.update(TABLE_GAMES, values, whereClause, whereArgs);
         db.close();
         return result;
     }
-    
+    /**
+     * Обновление игры
+     */
+    public int updateGame(Game game) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_GAME_TITLE, game.getTitle());
+        values.put(COLUMN_GAME_GENRE, game.getGenre());
+        values.put(COLUMN_GAME_PLATFORM, game.getPlatform());
+        values.put(COLUMN_GAME_STATUS, game.getStatus());
+        values.put(COLUMN_GAME_NOTE, game.getNote());
+        values.put(COLUMN_APP_PACKAGE_NAME, game.getAppPackageName());
+
+        String whereClause = COLUMN_GAME_ID + " = ?";
+        String[] whereArgs = {String.valueOf(game.getId())};
+
+        int result = db.update(TABLE_GAMES, values, whereClause, whereArgs);
+        db.close();
+        return result;
+    }
+
     /**
      * Удаление игры
      */
@@ -278,12 +303,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         String whereClause = COLUMN_GAME_ID + " = ?";
         String[] whereArgs = {String.valueOf(gameId)};
-        
+
         int result = db.delete(TABLE_GAMES, whereClause, whereArgs);
         db.close();
         return result;
     }
-    
+
     /**
      * Получение игры по ID
      */
@@ -297,12 +322,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             COLUMN_GAME_STATUS,
             COLUMN_GAME_USER_ID,
                 COLUMN_GAME_NOTE,
+                COLUMN_APP_PACKAGE_NAME,
             COLUMN_GAME_ADDED_DATE
         };
-        
+
         String selection = COLUMN_GAME_ID + " = ?";
         String[] selectionArgs = {String.valueOf(gameId)};
-        
+
         Cursor cursor = db.query(
             TABLE_GAMES,
             columns,
@@ -310,10 +336,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             selectionArgs,
             null, null, null
         );
-        
+
         Game game = null;
         if (cursor != null && cursor.moveToFirst()) {
             game = new Game();
+            game.setAppPackageName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_APP_PACKAGE_NAME)));
             game.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_GAME_ID)));
             game.setTitle(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_GAME_TITLE)));
             game.setGenre(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_GAME_GENRE)));
@@ -324,7 +351,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             game.setAddedDate(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_GAME_ADDED_DATE)));
             cursor.close();
         }
-        
+
         db.close();
         return game;
     }

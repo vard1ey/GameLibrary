@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/primary_dark_blue"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="95dp"
+        android:layout_marginBottom="16dp"
+        android:gravity="center"
+        android:text="Выберите приложение"
+        android:textColor="@color/light_blue"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <ListView
+        android:id="@+id/appsListView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/primary_dark_blue"
+        android:divider="@color/secondary_blue"
+        android:dividerHeight="1dp" />
+
+</LinearLayout>

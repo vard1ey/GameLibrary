@@ -9,6 +9,7 @@ public class Game {
     private int userId;
     private String addedDate;
     private String note;
+    private String appPackageName; // Новое поле для package name приложения
 
     public Game() {
     }
@@ -79,11 +80,19 @@ public class Game {
         this.addedDate = addedDate;
     }
 
-    public String getNote(){
+    public String getNote() {
         return note;
     }
 
-    public void setNote(String note){
+    public void setNote(String note) {
         this.note = note;
+    }
+
+    public String getAppPackageName() {
+        return appPackageName;
+    }
+
+    public void setAppPackageName(String appPackageName) {
+        this.appPackageName = appPackageName;
     }
 }

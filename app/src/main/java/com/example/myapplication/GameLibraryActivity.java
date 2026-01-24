@@ -95,17 +95,46 @@ public class GameLibraryActivity extends AppCompatActivity {
         TextView statusTextView = gameCard.findViewById(R.id.statusTextView);
         TextView noteTextView = gameCard.findViewById(R.id.noteTextView);
         Button deleteButton = gameCard.findViewById(R.id.deleteButton);
+        Button launchButton = gameCard.findViewById(R.id.launch_button);
 
         titleTextView.setText(game.getTitle());
         genreTextView.setText("Жанр: " + game.getGenre());
         statusTextView.setText("Статус: " + game.getStatus());
         noteTextView.setText(game.getNote());
 
+        // Проверяем, является ли игра мобильной
+        boolean isMobileGame = "Mobile".equals(game.getPlatform());
+
+        // Настраиваем кнопку запуска в зависимости от платформы
+        if (isMobileGame) {
+            if (game.getAppPackageName() != null && !game.getAppPackageName().isEmpty()) {
+                launchButton.setEnabled(true);
+                launchButton.setVisibility(View.VISIBLE);
+            } else {
+                launchButton.setText("Приложение не выбрано");
+                launchButton.setEnabled(false);
+                launchButton.setVisibility(View.VISIBLE);
+            }
+        } else {
+            // Для не-мобильных игр скрываем кнопку запуска
+            launchButton.setVisibility(View.GONE);
+        }
+
         deleteButton.setOnClickListener(v -> {
             databaseHelper.deleteGame(game.getId());
+            Toast.makeText(this,"Игра удалена", Toast.LENGTH_SHORT).show();
             loadGames();
         });
 
+        launchButton.setOnClickListener(v -> {
+            if (game.getAppPackageName() != null && !game.getAppPackageName().isEmpty()) {
+                launchApp(game.getAppPackageName());
+            } else {
+                Toast.makeText(this, "Приложение для запуска не выбрано", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // Обработчик клика по карточке для изменения статуса
         gameCard.setOnClickListener(v -> {
             String currentStatus = game.getStatus();
             String newStatus;
@@ -123,6 +152,24 @@ public class GameLibraryActivity extends AppCompatActivity {
         });
 
         gamesContainer.addView(gameCard);
+    }
+
+    private void launchApp(String packageName) {
+        try {
+            Intent launchIntent = getPackageManager().getLaunchIntentForPackage(packageName);
+            if (launchIntent != null) {
+                startActivity(launchIntent);
+            } else {
+                // Если не удалось получить launch intent, пытаемся открыть настройки приложения
+                Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                intent.setData(android.net.Uri.parse("package:" + packageName));
+                startActivity(intent);
+                Toast.makeText(this, "Приложение не может быть запущено напрямую", Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e) {
+            Toast.makeText(this, "Ошибка при запуске приложения", Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
     }
 
     private void logout() {
