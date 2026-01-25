@@ -74,7 +74,7 @@
 
 Граф программы:
 
-
+<img width="417" height="575" alt="2026-01-25_18-33-44" src="https://github.com/user-attachments/assets/8a42bb03-90b2-487a-ad0c-71849ee34377" />
 
 Пояснение по графу:
 1. Запуск приложения
