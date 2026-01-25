@@ -49,13 +49,17 @@
 ### Примеры интерфейса:
 Выбор жанра и платформы в одном из всплывающих списков:
 
-<img width="380" height="679" alt="Выбор жанра" src="https://github.com/user-attachments/assets/122c7b61-8b1f-4f9f-a4e8-9dc47015041e" />
+![photo_2026-01-25_18-26-08](https://github.com/user-attachments/assets/1cb9f057-4ea6-4475-a7f2-21154a2acdd1)
 
-<img width="372" height="677" alt="Выбор платформы" src="https://github.com/user-attachments/assets/d89a4d4a-5aed-43d3-a38b-56c887afebc8" />
+![photo_2026-01-25_18-26-24](https://github.com/user-attachments/assets/66f97f6d-2015-4d58-ac54-bac2cdcf8901)
+
+Выбор запускаемого приложения(при выборе платформы Mobile):
+
+![photo_2026-01-25_18-26-28](https://github.com/user-attachments/assets/3a387aa5-a674-4c1c-b8e5-d44dd85d6ebb)
 
 Готовая карточка игры в библиотеке:
 
-<img width="376" height="675" alt="Карточка игры" src="https://github.com/user-attachments/assets/ad61934f-31b7-47fc-93b3-753cb9154d86" />
+![photo_2026-01-25_18-26-32](https://github.com/user-attachments/assets/a37d6b74-c9fe-4815-8452-725d2b6060c0)
 
 ## Разработка
 ### Требования
