@@ -63,7 +63,7 @@
 
 ## Разработка
 ### Требования
-Для установки и запуска проекта необходим [Android Studio](https://developer.android.com/studio?hl=ru) версии Arctic Fox или выше.
+Для установки и запуска проекта необходим [Android Studio](https://developer.android.com/studio?hl=ru).
 
 ## Тестирование
 В проекте использовались интеграционное и модульное тестирования.
